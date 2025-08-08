@@ -1,0 +1,84 @@
+name: Node-js CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_call:
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  lint-python:
+    name: Lint Python
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: astral-sh/ruff-action@v3
+      with:
+        args: "check --select=E,F,PLC,PLE,UP,W,YTT --ignore=E721,PLC0206,PLC1901,S101,UP031 --target-version=py39"
+
+  lint-js:
+    name: Lint JS
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+    - name: Install Dependencies
+      run: npm install
+    - name: Lint
+      run: npm run lint
+
+  check-engines:
+    name: Check Engines
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+    - name: Install Dependencies
+      run: npm install
+    - name: Check Engines
+      run: |
+        # TODO: move this to its own action
+        npm install @npmcli/arborist@7 semver@7 --no-save
+        node .github/scripts/check-engines.js
+  test-pack:
+    name: Test Pack
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+    - name: Update npm
+      run: npm install npm@latest -g
+    - name: Install Dependencies
+      run: npm install
+    - name: Pack
+      id: pack
+      env:
+        NODE_GYP_TEMP_DIR: '${{ runner.temp }}/node-gyp'
+      run: |
+        mkdir -p $NODE_GYP_TEMP_DIR
+        npm pack
+        tar xzf *.tgz -C $NODE_GYP_TEMP_DIR --strip-components=1
+        cp -r test/ $NODE_GYP_TEMP_DIR/test/
+        echo "dir=$NODE_GYP_TEMP_DIR" >> "$GITHUB_OUTPUT"
+    - name: Test
+      working-directory: ${{ steps.pack.outputs.dir }}
+      env:
+        FULL_TEST: '1'
+      run: |
+        npm install
+        npm test
