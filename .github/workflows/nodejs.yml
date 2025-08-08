@@ -1,25 +1,15 @@
 name: Node-js CI
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_call:
+ 
+  workflow_dispatch:
 
 permissions:
   contents: read # to fetch code (actions/checkout)
 
 jobs:
-  lint-python:
-    name: Lint Python
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: astral-sh/ruff-action@v3
-      with:
-        args: "check --select=E,F,PLC,PLE,UP,W,YTT --ignore=E721,PLC0206,PLC1901,S101,UP031 --target-version=py39"
 
-  lint-js:
+
+  nodebuild:
     name: Lint JS
     runs-on: ubuntu-latest
     steps:
@@ -51,7 +41,7 @@ jobs:
         # TODO: move this to its own action
         npm install @npmcli/arborist@7 semver@7 --no-save
         node .github/scripts/check-engines.js
-  test-pack:
+  test:
     name: Test Pack
     runs-on: ubuntu-latest
     steps:
