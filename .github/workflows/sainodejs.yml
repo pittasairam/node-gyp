@@ -2,15 +2,15 @@ name: CI Node.js Project
 
 on:
   workflow_dispatch:
-    inputs:
-      TARGET_ENVIRONMENT:
-        type: environment
-        default: dev
+   # inputs:
+    #  TARGET_ENVIRONMENT:
+      #  type: environment
+       # default: dev
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.TARGET_ENVIRONMENT }}
+   # environment: ${{ inputs.TARGET_ENVIRONMENT }}
 
     steps:
       - name: Checkout code
