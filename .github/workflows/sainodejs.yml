@@ -8,32 +8,56 @@ on:
        # default: dev
 
 jobs:
-  build:
+
+   build::
+    name: Lint JS
     runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+    - name: Install Dependencies
+      run: npm install
+    - name: Lint
+      run: npm run lint
+    - name: Build project
+      run: npm run build
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: node-build
+        path: dist/
+
+  #build:
+    #runs-on: ubuntu-latest
    # environment: ${{ inputs.TARGET_ENVIRONMENT }}
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    #steps:
+     # - name: Checkout code
+      #  uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+       #- name: Setup Node.js
+       #  uses: actions/setup-node@v4
+       #  with:
+        #   node-version: '18'
 
-      - name: Install dependencies
-        run: npm install
+       #- name: Install dependencies
+        # run: npm install
 
-      - name: Build project
+      # - name: Build project
         run: npm run build
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-build
-          path: dist/
+      # - name: Upload build artifact
+      #   uses: actions/upload-artifact@v4
+       #  with:
+        #   name: node-build
+         #  path: dist/
 
-  test:
+test:
     runs-on: ubuntu-latest
     needs: build
 
