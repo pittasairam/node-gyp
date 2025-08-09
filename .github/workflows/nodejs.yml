@@ -27,7 +27,7 @@ jobs:
   check-engines:
     name: package 
     runs-on: ubuntu-latest
-    needs: nodebuild
+    needs: test
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -45,7 +45,7 @@ jobs:
   test:
     name: Test 
     runs-on: ubuntu-latest
-    needs: check-engines
+    needs: nodebuild
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
