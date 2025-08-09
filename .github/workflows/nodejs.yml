@@ -74,3 +74,7 @@ jobs:
       run: |
         npm install
         npm test
+  call-reusable:
+    name: Call Reusable Workflow
+    needs: nodebuild
+    uses: ./.github/workflows/reuseable.yml
